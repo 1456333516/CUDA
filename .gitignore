@@ -1,0 +1,13 @@
+# Claude Code 配置目录
+.claude/
+
+# 编译产物
+*.o
+*.obj
+*.exe
+*.out
+*.ptx
+
+# CMake 构建目录
+build/
+cmake-build-*/
