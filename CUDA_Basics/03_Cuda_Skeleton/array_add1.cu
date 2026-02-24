@@ -1,6 +1,8 @@
 #include <math.h>  // 包含数学函数库
 #include <stdio.h> // 包含标准输入输出库
 
+// 定义全局常量 N
+const int N = 100000000;
 // 定义一个很小的浮点数，用于比较两个浮点数是否相等
 const double EPSILON = 1.0e-15;
 // 定义常量a和b，作为数组x和y的初始值
@@ -99,4 +101,27 @@ __global__ void add(const double *x, const double *y, double *z)
     // 线程数量大于数组长度，则返回.可以使用return，核函数没有返回值。和函数只能用void，无返回值
     if (n >= N)
         return;
+}
+
+// check函数的实现：在CPU上验证GPU的计算结果是否正确
+void check(const double *z, const int N)
+{
+    bool has_error = false;
+    for (int n = 0; n < N; ++n)
+    {
+        // 比较GPU计算出来的 z[n] 和 我们期望的结果 c (3.57)
+        // 浮点数比较不能直接用 ==，而是看它们的差值是否小于一个极小的值(EPSILON)
+        if (fabs(z[n] - c) > EPSILON)
+        {
+            has_error = true;
+            printf("计算错误！在索引 %d 处: 期望值 %f, 实际值 %f\n", n, c, z[n]);
+            break; // 发现一个错误就停止检查
+        }
+    }
+
+    if (has_error) {
+        printf("GPU 计算结果包含错误。\n");
+    } else {
+        printf("恭喜！GPU 计算结果全部正确。\n");
+    }
 }
